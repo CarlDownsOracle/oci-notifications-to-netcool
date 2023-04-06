@@ -4,12 +4,12 @@
 
 ## Overview
 
-This sample OCI Function maps OCI Notifications to IBM® Tivoli® Netcool/OMNIbus Probe for Message Bus
+This sample OCI Function maps OCI Notifications to IBM® Tivoli® Netcool/OMNIbus Probe for Message Bus.  
 See [IBM® Tivoli® Netcool/OMNIbus Probe](https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf) for details. 
-Here is the basic pattern
+
+Here is the [basic pattern](https://docs.oracle.com/en-us/iaas/Content/Notification/Concepts/notificationoverview.htm):
 
 ![](images/notifications.alarms.pattern.png)
-
 
 
 ### Prerequisites
