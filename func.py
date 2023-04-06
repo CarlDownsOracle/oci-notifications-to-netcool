@@ -111,7 +111,7 @@ def send_payload(event_list, ctx):
             response = session.post(api_endpoint, data=json.dumps(event), headers=api_headers)
 
             if response.status_code != 200:
-                raise Exception ('error {} sending to Netcool: {}'.format(response.status_code, response.reason))
+                raise Exception('error {} sending to Netcool: {}'.format(response.status_code, response.reason))
 
     finally:
         session.close()

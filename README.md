@@ -5,7 +5,11 @@
 ## Overview
 
 This sample OCI Function maps OCI Notifications to IBM® Tivoli® Netcool/OMNIbus Probe for Message Bus
-See https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf
+See [IBM® Tivoli® Netcool/OMNIbus Probe](https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf) for details. 
+Here is the basic pattern
+
+![](images/notifications.alarms.pattern.png)
+
 
 
 ### Prerequisites
@@ -13,21 +17,26 @@ See https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf
 If you’re new to Functions, get familiar by running through 
 the [Quick Start guide on OCI Functions](http://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartguidestop.htm) before proceeding.
 
+
+---
+## Notifications Service
+The [Notifications Service](https://docs.oracle.com/en-us/iaas/Content/Notification/Concepts/notificationoverview.htm) 
+details are found here.  You will need to set up a Topic and a Subscription.  The
+Subscription we need will target the Function we are building.  During testing, you may find it useful to have an 
+Email Subscription to see what the Notification system is receiving / sending.  
+
 ---
 ## Monitoring Service
 
- The [Monitoring Service](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm)
- receives timestamp-value pairs (aka metric data points) which also carry contextual 
-dimensions and metadata about the services or applications that emitted them. 
+The [Monitoring Service](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm) details
+can be found here.  You will need to set up an Alarm that connects to your Notification Topic.
 
 ---
 ## Functions Service
 
-I need to transform between the raw metrics formats and some way to make the API calls. The 
+I need to transform between the raw notification formats and some way to make the API calls. The 
 [OCI Functions Service](http://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm) is a 
-natural fit for the task. Functions integrate nicely with Service Connector Hub as-as a target and can scale up
-depending on the demand.  That lets me focus on writing the logic needed without needing to address how to 
-deploy and scale it.
+natural fit for the task. Functions integrate nicely with Notifications a target.
 
 ---
 ## Mapping From OCI to Netcool Formats
