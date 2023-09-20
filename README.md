@@ -107,7 +107,7 @@ Allow users in `functions-developers` to create, deploy and manage Functions and
 
     Allow group functions-developers to manage repos in tenancy
     Allow group functions-developers to manage metrics in tenancy
-    Allow group functions-developers to manage notifications in tenancy
+    Allow group functions-developers to manage alarms in tenancy
     Allow group functions-developers to use cloud-shell in tenancy
     Allow group functions-developers to use virtual-network-family in tenancy
 
@@ -115,7 +115,7 @@ Allow Functions Service to use OCIR Repositories at the tenancy level:
 
     Allow service faas to use repos in tenancy 
 
-
+See details of [Monitoring policies](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/monitoringpolicyreference.htm#Details_for_Monitoring).
 
 ---
 ## Build the Function
