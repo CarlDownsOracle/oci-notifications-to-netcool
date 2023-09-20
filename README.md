@@ -28,8 +28,8 @@ Here's the basic architecture:
 ---
 ## Monitoring Service
 
-The [Monitoring Service](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm) details
-can emit Alarms when a resource breaches a prescribed operating threshold.  We will set up an Alarm that connects to your Notification Topic.
+The [Monitoring Service](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm) can
+monitor resources and emit Alarms when a resource breaches a prescribed operating threshold.  We will set up an Alarm that connects to your Notification Topic.
 
 ---
 ## Functions Service
