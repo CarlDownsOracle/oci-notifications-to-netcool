@@ -4,52 +4,53 @@
 
 ## Overview
 
-This sample OCI Function maps OCI Notifications to [IBM® Tivoli® Netcool/OMNIbus Probe](https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf). 
+This solution sample 
+uses [OCI Notifications](https://docs.oracle.com/en-us/iaas/Content/Notification/home.htm) 
+to export [OCI Alarms](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm) 
+to [IBM® Tivoli® Netcool/OMNIbus Probe](https://www.ibm.com/docs/en/SSSHTQ_int/pdf/messbuspr-pdf.pdf). 
 
-Here is the [basic pattern](https://docs.oracle.com/en-us/iaas/Content/Notification/Concepts/notificationoverview.htm):
-
-![](images/notifications.alarms.pattern.png)
-
-
-### Prerequisites
-
-If you’re new to Functions, get familiar by running through 
-the [Quick Start guide on OCI Functions](http://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartguidestop.htm) before proceeding.
 
 
 ---
 ## Notifications Service
 The [Notifications Service](https://docs.oracle.com/en-us/iaas/Content/Notification/Concepts/notificationoverview.htm) 
-details are found here.  You will need to set up a Topic and a Subscription.  The
-Subscription we need will target the Function we are building.  During testing, you may find it useful to have an 
-Email Subscription to see what the Notification system is receiving / sending.  
+supports several 
+[Integration Patterns](https://docs.oracle.com/en-us/iaas/Content/Notification/Concepts/notificationoverview.htm#Flow__alarms).  We will be using the Alarms-to-Notifications pattern for this NetCool use case.
+You will need to set up a Notification Topic that targets the Function we will build.  
+
+
+### Monitoring Alarm Integration
+
+Here's the basic architecture:
+
+![](images/architecture.png)
 
 ---
 ## Monitoring Service
 
 The [Monitoring Service](https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm) details
-can be found here.  You will need to set up an Alarm that connects to your Notification Topic.
+can emit Alarms when a resource breaches a prescribed operating threshold.  We will set up an Alarm that connects to your Notification Topic.
 
 ---
 ## Functions Service
 
-I need to transform between the raw notification formats and some way to make the API calls. The 
-[OCI Functions Service](http://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm) is a 
-natural fit for the task. Functions integrate nicely with Notifications a target.
+The [OCI Functions](http://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm) is 
+based on the [Fn Project](https://fnproject.io/), an open source, container 
+native, serverless platform that can be run anywhere - any cloud or on-premises. Fn Project 
+is easy to use, extensible, and performant.
 
 ---
-## Mapping From OCI to Netcool Formats
+## OCI Notifications Format
 
-A key requirement of course is the mapping of OCI to Netcool format.  Let's compare the OCI and Netcool
-message payload formats, what the mapping needs to accomplish, and see what the resulting transformed message 
-looks like.
+Because Notifications is a general service, it can handle different types of message formats.  This
+sample implementation simply forwards the Notification JSON as-is to NetCool. 
 
-Example OCI Notifications Payload:
-    
+Here is a sample JSON payload for reference.  In this example, we have a firing `Alarm` from the `oci_objectstorage` namespace.
+
      {
        "dedupeKey": "3d5c2f16-....",
-       "title": "ontario-health-alarm",
-       "body": "ontario-health test alarm",
+       "title": "example-alarm",
+       "body": "example test alarm",
        "type": "OK_TO_FIRING",
        "severity": "INFO",
        "timestampEpochMillis": 1680821220000,
@@ -60,12 +61,12 @@ Example OCI Notifications Payload:
            "status": "FIRING",
            "severity": "INFO",
            "namespace": "oci_objectstorage",
-           "query": "AllRequests[1m]{resourceDisplayName = \"ontario-health-bucket\"}.count() > 1",
+           "query": "AllRequests[1m]{resourceDisplayName = \"example-bucket\"}.count() > 1",
            "totalMetricsFiring": 1,
            "dimensions": [
              {
                "resourceID": "ocid1.bucket.oc1.phx.....",
-               "resourceDisplayName": "ontario-health-bucket"
+               "resourceDisplayName": "example-bucket"
              }
            ],
            "alarmUrl": "https://cloud.oracle.com/monitoring/alarms/ocid1.alarm.oc1.phx..."
@@ -74,47 +75,55 @@ Example OCI Notifications Payload:
        "version": 1.3
      }
 
-Example Netcool Payload:
-
-     {
-       "receiver": "Sandbox - Info",
-       "status": "firing",
-       "alerts": [
-         {
-           "status": "firing",
-           "labels": {
-             "alertname": "UpdateAvailable",
-             "channel": "eus-4.10",
-             "openshift_io_alert_source": "platform",
-             "prometheus": "openshift-monitoring/k8s",
-             "severity": "info",
-             "upstream": "\u003cdefault\u003e"
-           },
-           "annotations": {
-             "description": "For more information refer to ...",
-             "summary": "Your upstream update recommendation service recommends you update your cluster."
-           }
-         }
-       ]
-     }
-
-Mapping Behavior:
-
-     TBD
-
-Resulting Output:
-
-     TBD
 
 ---
-## Policy Setup
+# Setting up the Function App in OCI
 
-You will need to authorize the Notifications Service to invoke your Function.
+Here are the steps to deploying this in your OCI tenancy.
 
-    Allow service notification to use fn-app in compartment {compartment name}
+## Compartment
+
+Create a compartment to contain the following:
+
+- Virtual Cloud Network
+- Application + Function
+- Service Connector
+
+_Let's assume you create a compartment with name `ABC`._
+
+## Group
+
+Create a user group where we can assign developer related policies.   
+
+_Let's assume you create a user group with name `functions-developers`._
+
+## Policies
+
+See [common policies](https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/commonpolicies.htm).
+
+Here is an example IAM policy structure:
+
+Allow users in `functions-developers` to create, deploy and manage Functions and Applications at the tenancy level.
+
+    Allow group functions-developers to manage repos in tenancy
+    Allow group functions-developers to manage metrics in tenancy
+    Allow group functions-developers to manage notifications in tenancy
+    Allow group functions-developers to use cloud-shell in tenancy
+    Allow group functions-developers to use virtual-network-family in tenancy
+
+Allow Functions Service to use OCIR Repositories at the tenancy level:
+
+    Allow service faas to use repos in tenancy 
+
+
 
 ---
-## Function Environment
+## Build the Function
+
+Follow the steps found in the [Quick Start guide on OCI Functions](http://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartguidestop.htm).
+The [Cloud Shell instructions](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartcloudshell.htm#functionsquickstart_cloudshell) are recommended.
+
+### Function Configuration
 
 Here are the supported Function parameters:
 
@@ -125,6 +134,27 @@ Here are the supported Function parameters:
 | LOGGING_LEVEL        | INFO     | Controls function logging outputs.  Choices: INFO, WARN, CRITICAL, ERROR, DEBUG       |
 | FORWARD_TO_ENDPOINT  | True      | Determines whether messages are forwarded to the API endpoint (useful during testing) |
 
+
+---
+## Troubleshooting
+
+This [troubleshooting guide](https://docs.public.oneportal.content.oci.oraclecloud.com/en-us/iaas/Content/Functions/Tasks/functionstroubleshooting.htm) can also be very helpful.
+[Enable Function Invocation Service logs](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsexportingfunctionlogfiles.htm) to see the logs generated by the Function.
+It's a good idea to set `LOGGING_LEVEL = DEBUG` as a general rule while first deploying the Function.  
+
+
+### Function Timing-Out
+
+* Increase `BATCH_SIZE` to a larger value
+* Set `LOGGING_LEVEL = INFO`
+* [Increase Function timeout and / or memory allocation](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionscustomizing.htm)
+
+
+---
+## Conclusion
+
+You now have a low-maintenance, serverless function that forwards OCI Notifications to NetCool in
+near-real time.
 
 ---
 ## **OCI** Related Workshops
