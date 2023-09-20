@@ -108,8 +108,11 @@ Allow users in `functions-developers` to create, deploy and manage Functions and
     Allow group functions-developers to manage repos in tenancy
     Allow group functions-developers to manage metrics in tenancy
     Allow group functions-developers to manage alarms in tenancy
-    Allow group functions-developers to use cloud-shell in tenancy
+    allow group functions-developers to manage ons-topics in tenancy
+    allow group functions-developers to manage cloudevents-rules in tenancy
+    allow group functions-developers to manage functions-family in tenancy
     Allow group functions-developers to use virtual-network-family in tenancy
+    Allow group functions-developers to use cloud-shell in tenancy
 
 Allow Functions Service to use OCIR Repositories at the tenancy level:
 
