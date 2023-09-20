@@ -103,7 +103,8 @@ See [common policies](https://docs.oracle.com/en-us/iaas/Content/Identity/Concep
 
 Here is an example IAM policy structure:
 
-Allow users in `functions-developers` to create, deploy and manage Functions and Applications at the tenancy level.
+Allow users in `functions-developers` group to manage or use the 
+various resource types required for this sample.
 
     Allow group functions-developers to manage repos in tenancy
     Allow group functions-developers to manage metrics in tenancy
